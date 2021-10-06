@@ -2,10 +2,20 @@ import 'package:flutter/cupertino.dart';
 
 class HomeController extends ChangeNotifier {
   //Declaring which got locked or unlocked
+  //Lesson 3 Code start ,
+  //BottomNav ontap with index is 0 or 1, 2, 3,
+  int selectedBottomTab = 0;
+
+  void onBottomNavigationTabChange(int index) {
+    selectedBottomTab = index;
+    notifyListeners();
+  }
+
+
   bool isRightDoorLock = true;
   bool isLeftDoorLock = true;
   bool isBonnetDoorLock = true;
-  bool isTrunkDoorLock = false;
+  bool isTrunkDoorLock = true;
 
 
   void updateRightDoorLock() {
