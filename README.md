@@ -1,6 +1,14 @@
 # tesla_car_animation_part_one
+# Finished Part 2 with fullcode
 
 A new Flutter project.
+
+# Theming Note
+# Prj Structure => /theme  added 
+# store_manager.dart
+# theme_manager.dart
+# added provider and shared_preferences plugin.
+#
 
 ## Getting Started
 
