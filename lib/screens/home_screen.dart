@@ -8,6 +8,9 @@ import 'components/door_lock.dart';
 import 'components/tesla_bottom_navbar.dart';
 import 'components/tmp_btn.dart';
 import 'components/tmp_details.dart';
+import 'components/tyre_psi_card.dart';
+import 'components/tyres.dart';
+import '../models/TyrePsi.dart';
 
 class HomeScreen extends StatefulWidget {
   //Battery and Space photo animation need Stateful State
@@ -30,8 +33,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late Animation<double> _animationCarShift;
   late Animation<double> _animationTempShowInfo;
   late Animation<double> _animationCoolGlow;
+//Part 4 final part
+  late AnimationController _tyreAnimationController;
+  //Part 4 Tyre. Each tyre one by one animation
+  late Animation<double> _animationTyre1Psi;
+  late Animation<double> _animationTyre2Psi;
+  late Animation<double> _animationTyre3Psi;
+  late Animation<double> _animationTyre4Psi;
+
+  late List<Animation<double>> _tyreAnimations;
   //get theme => null;
 
+  //TempAnimation
   void setupTempAnimation() {
     _tempAnimationController = AnimationController(
       vsync: this,
@@ -53,6 +66,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
+//Battery Animations
   void setupBatteryAnimation() {
     _batteryAnimationController = AnimationController(
       vsync: this,
@@ -73,11 +87,33 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
+  //TyreStatus Animations
+  void setupTyreAnimation() {
+    _tyreAnimationController = AnimationController(
+        vsync: this, duration: Duration(microseconds: 1200));
+
+    _animationTyre1Psi = CurvedAnimation(
+        parent: _tyreAnimationController, curve: Interval(0.34, 0.5));
+    _animationTyre2Psi = CurvedAnimation(
+        parent: _tyreAnimationController, curve: Interval(0.5, 0.66));
+    _animationTyre3Psi = CurvedAnimation(
+        parent: _tyreAnimationController, curve: Interval(0.66, 0.82));
+    _animationTyre4Psi = CurvedAnimation(
+        parent: _tyreAnimationController, curve: Interval(0.82, 1));
+  }
+
   // State and Dispose LEsson 2
   @override
   void initState() {
     setupBatteryAnimation();
     setupTempAnimation();
+    setupTyreAnimation();
+    _tyreAnimations = [
+      _animationTyre1Psi,
+      _animationTyre2Psi,
+      _animationTyre3Psi,
+      _animationTyre4Psi,
+    ];
     super.initState();
   }
 
@@ -86,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _batteryAnimationController.dispose();
     _batteryAnimationController.dispose();
     _tempAnimationController.dispose();
-
+    _tyreAnimationController.dispose();
     super.dispose();
   }
 
@@ -99,7 +135,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         animation: Listenable.merge([
           _controller,
           _batteryAnimationController,
-          _tempAnimationController
+          _tempAnimationController,
+          _tyreAnimationController,
         ]),
         builder: (context, _) {
           //IF we need to see value on Screen
@@ -140,6 +177,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 else if (_controller.selectedBottomTab == 2 && index != 2)
                   _tempAnimationController.reverse(from: 0.4);
 
+                if(index == 3) _tyreAnimationController.forward();
+                else if(_controller.selectedBottomTab == 3 && index != 3)
+                  _tyreAnimationController.reverse(); 
+
+                _controller.showTyreController(index);
+                _controller.tyreStatusController(index);
+                // #4 make sure you call it bfore [onBottomNavigationTabChange]
                 _controller.onBottomNavigationTabChange(index);
               },
               selectedTab: _controller.selectedBottomTab,
@@ -271,7 +315,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         child: BatteryStatus(constrains: constrains),
                       ),
                     ),
-                    
+
                     //Temp
                     Positioned(
                       height: constrains.maxHeight,
@@ -281,7 +325,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           opacity: _animationTempShowInfo.value,
                           child: TempDetails(controller: _controller)),
                     ),
-                    
+
                     Positioned(
                         right: -180 * (1 - _animationCoolGlow.value),
                         child: AnimatedSwitcher(
@@ -297,6 +341,31 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     key: UniqueKey(),
                                     width: 200,
                                   ))),
+
+                    //Tyre
+                    if (_controller.isShowTyre) ...tyres(constrains),
+
+                    if (_controller.isShowTyreStatus)
+                      //Lets add animations
+                      //GridView
+                      GridView.builder(
+                        itemCount: 4,
+                        physics: NeverScrollableScrollPhysics(),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: defaultPadding,
+                          crossAxisSpacing: defaultPadding,
+                          childAspectRatio:
+                              constrains.maxWidth / constrains.maxHeight,
+                        ),
+                        itemBuilder: (context, index) => ScaleTransition(
+                          scale: _tyreAnimations[index],
+                          child: TyrePsiCard(
+                            isBottomTwoTyre: index > 1,
+                            tyrePsi: demoPsiList[index],
+                          ),
+                        ),
+                      ),
                   ],
                 );
               }),

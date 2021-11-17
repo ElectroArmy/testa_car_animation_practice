@@ -11,12 +11,10 @@ class HomeController extends ChangeNotifier {
     notifyListeners();
   }
 
-
   bool isRightDoorLock = true;
   bool isLeftDoorLock = true;
   bool isBonnetDoorLock = true;
   bool isTrunkDoorLock = true;
-
 
   void updateRightDoorLock() {
     isRightDoorLock = !isRightDoorLock;
@@ -41,7 +39,42 @@ class HomeController extends ChangeNotifier {
   bool isCoolSelected = true;
 
   void updateCoolSelectedTab() {
-    isCoolSelected = !isCoolSelected; 
+    isCoolSelected = !isCoolSelected;
     notifyListeners();
+  }
+
+  bool isShowTyre = false;
+
+  void showTyreController(int index) {
+    //Once user on this tyre tab we want to show the tyre
+    // Yea lets define this method on bottomnav
+    // as we see we want to show those tyres alittle bit later...
+
+    if (selectedBottomTab != 3 && index == 3) {
+      Future.delayed(
+        Duration(milliseconds: 400),
+        () {
+          isShowTyre = true;
+          notifyListeners();
+        },
+      );
+    } else {
+      isShowTyre = false;
+      notifyListeners();
+    }
+  }
+
+  bool isShowTyreStatus = false; 
+
+  void tyreStatusController(int index) {
+    if (selectedBottomTab != 3 && index == 3) {
+      isShowTyreStatus = true;
+      notifyListeners();
+    } else {
+      Future.delayed(Duration(milliseconds: 400), () {
+        isShowTyreStatus = false;
+        notifyListeners();
+      });
+    }
   }
 }
