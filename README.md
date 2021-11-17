@@ -1,5 +1,5 @@
 # tesla_car_animation_part_one
-# Finished Part 2 with fullcode
+# Finished Part 4 with fullcode
 
 A new Flutter project.
 
@@ -8,7 +8,7 @@ A new Flutter project.
 # store_manager.dart
 # theme_manager.dart
 # added provider and shared_preferences plugin.
-#
+# Removed []
 
 ## Getting Started
 
